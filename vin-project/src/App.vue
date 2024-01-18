@@ -9,38 +9,15 @@ const VinDecoder = reactive<VinDecoder>({ value: '', threshold: 0 })
 
 const displayResultKtypynr = ref(false);
 
-const isResultHidden = computed(() => !displayResultKtypynr.value);
-
 function handleFormSumission(formValue) {
   displayResultKtypynr.value = true
   console.log('Form submitted:', formValue)
 }
 
-// function handleFormReset(formEl: FormInstance) {
-//   if (!formEl) return
-//   formEl.resetFields()
-//   console.log('Form reset:', formEl)
-//   displayResultKtypynr.value = false
-// }
-
-// if(displayResultKtypynr.value === false){
-//     console.log('hidden')
-// } else {
-//   console.log('shown')
-// }
 
 const handleFormReset = async (formEl: FormInstance) => {
   if (!formEl) return;
-
-  await formEl.resetFields();
-
-  // Access the computed property
-  if (isResultHidden.value) {
-    console.log('hidden');
-  } else {
-    console.log('shown');
-  }
-
+  formEl.resetFields();
   displayResultKtypynr.value = false;
 };
 

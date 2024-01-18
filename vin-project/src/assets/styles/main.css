@@ -15,3 +15,11 @@ body .el-main {
     padding:  5em;
    
   }
+
+  .el-input-group--append .el-input-group__append .el-select .el-select__wrapper{
+    min-height: 40px;
+}
+
+.el-table th.el-table__cell {
+    background-color: lightgray;
+}

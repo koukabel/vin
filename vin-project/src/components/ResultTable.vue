@@ -5,20 +5,21 @@ interface Props {
 }
 const props = defineProps<Props>()
 </script>
-<template class="resume_table">
-  <div class="table_wrapper">
+<template>
+  <div class="table_wrapper" >
     <el-table :data="[props.vinDecoder]" border>
       <el-table-column prop="value" label="Vin" width="" />
       <el-table-column prop="" label="KTYPNR" width="" />
       <el-table-column prop="" label="CONFIDENCE" />
-    </el-table>
-  </div>
+    </el-table> 
+  </div> 
+
 </template>
 
 <style>
-.el-table {
+.table_wrapper{
   margin: 40px;
-  width: 100%;
+  max-width: 80vw;
   height: auto;
 }
 

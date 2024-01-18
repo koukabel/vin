@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import type { VinDecoder } from '../communication/types'
-import type { FormInstance, FormRules } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus';
 
 interface Props {
   vinDecoder: VinDecoder
@@ -9,7 +9,7 @@ interface Props {
 
 interface Emits {
   (event: 'submit', value: VinDecoder): void
-  (event: 'reset', formEl: FormInstance): void;
+  (event: 'reset', formEl: FormInstance): void
 }
 
 const props = defineProps<Props>()
@@ -21,10 +21,14 @@ const form = props.vinDecoder
 const formRef = ref<FormInstance>()
 const rules = reactive<FormRules<VinDecoder>>({
   value: [
-    { required: true, message: 'Ce champ ne peut pas être vide', trigger: 'blur' },
-    { min:0, max: 17, message: 'Ce champ ne peut pas être vide', trigger: 'blur' }
-  ]
-})
+    { required: true, message: 'Le VIN est obligatoire', trigger: 'blur' },
+    { min: 0, max: 17, trigger: 'blur' }
+  ], 
+  power: [
+    { required: true, message: 'La puissance est obligatoire', trigger: 'blur' },
+  ], 
+  
+});
 
 const isVinValid = computed(() => form.value.length === 17)
 
@@ -34,6 +38,10 @@ const areDimensionsDisabled = computed(() => !form.power || !form.engine_capacit
 
 const areSeatsAndCo2Disabled = computed(() => !form.height || !form.width || !form.length)
 
+const heightUnit = ref(''); 
+const widthUnit = ref(''); 
+const lengthUnit = ref(''); 
+
 async function handleValidate() {
   const isFormValid = await formRef.value?.validate()
   if (isFormValid) {
@@ -42,14 +50,14 @@ async function handleValidate() {
 }
 
 function handleReset(formEl: FormInstance | undefined) {
-
-  emit('reset', formEl);
+  emit('reset', formEl)
 }
+
 </script>
 
 <template>
   <el-form class="vinForm" ref="formRef" :model="form" :rules="rules">
-    <el-radio-group v-model="mode">
+    <el-radio-group v-model="mode" class="radioBtnsContainer">
       <el-radio-button label="simple"> Mode simple </el-radio-button>
       <el-radio-button label="advanced"> Mode avancé </el-radio-button>
     </el-radio-group>
@@ -66,69 +74,91 @@ function handleReset(formEl: FormInstance | undefined) {
     <template v-if="mode === 'advanced'">
       <div class="advanced_search">
         <el-form-item class="div1" label="Power" label-position="top" prop="power">
-          <el-input-number
+          <el-input
             class="input-item"
             type="number"
-            min= 0
+            min="0"
             size="large"
             v-model="form.power"
             :controls="false"
             :disabled="arePowerAndCapacityDisabled"
           >
-            <!-- <template #prependRight >KW</template>  -->
-          </el-input-number>
+            <template #append>KW</template>
+          </el-input>
         </el-form-item>
         <el-form-item class="div2" label="Engine capacity" prop="engine_capacity">
-          <el-input-number
+          <el-input
             class="input-item"
             type="number"
-            min= 0
+            min="0"
             size="large"
             v-model="form.engine_capacity"
             :controls="false"
             :disabled="arePowerAndCapacityDisabled"
-          />
+          > <template #append>CC</template> </el-input>
         </el-form-item>
         <el-form-item class="div3" label="Height" prop="height">
-          <el-input-number
+          <el-input
             class="input-item"
             type="number"
-            min= 0
+            min="0"
             size="large"
             v-model="form.height"
             label="height"
             :controls="false"
             :disabled="areDimensionsDisabled"
-          />
+          >
+       <template #append>
+        <el-select v-model="heightUnit" placeholder="cm" style="width: 70px" >
+          <el-option label="cm" value="1" />
+          <el-option label="mm" value="2" />
+        </el-select>
+      </template>
+          </el-input>
         </el-form-item>
-        <el-form-item class="div4" label="Width" prop="width">
-          <el-input-number
+         <el-form-item class="div4" label="Width" prop="width">
+          <el-input
             class="input-item"
             type="number"
-            min= 0
+            min="0"
             size="large"
             v-model="form.width"
             label="width"
             :controls="false"
             :disabled="areDimensionsDisabled"
-          />
-        </el-form-item>
+          >
+           <template #append>
+        <el-select v-model="widthUnit" placeholder="cm" style="width: 70px" >
+          <el-option label="cm" value="1" />
+          <el-option label="mm" value="2" />
+        </el-select>
+      </template>
+          </el-input>
+        </el-form-item> 
         <el-form-item class="div5" label="Length" prop="length">
-          <el-input-number
+          <el-input
             class="input-item"
             type="number"
-            min= 0           size="large"
+            min= 0
+            size="large"
             v-model="form.length"
             label="length"
             :controls="false"
             :disabled="areDimensionsDisabled"
-          />
+          >
+           <template #append>
+        <el-select v-model="lengthUnit" placeholder="cm" style="width: 65px" >
+          <el-option label="cm" value="1" />
+          <el-option label="mm" value="2" />
+        </el-select>
+      </template>
+          </el-input>
         </el-form-item>
         <el-form-item class="div6" label="Nb seats" prop="Nb_seats">
-          <el-input-number
+          <el-input
             class="input-item"
             type="number"
-            min= 0
+            min="0"
             size="large"
             v-model="form.Nb_seats"
             label="Nb_seats"
@@ -137,45 +167,37 @@ function handleReset(formEl: FormInstance | undefined) {
           />
         </el-form-item>
         <el-form-item class="div7" label="CO2" prop="CO2">
-          <el-input-number
+          <el-input
             class="input-item"
             type="number"
-            min= 0
+            min="0"
             size="large"
             v-model="form.CO2"
             label="CO2"
             :controls="false"
             :disabled="areSeatsAndCo2Disabled"
-          />
+          >   <template #append>
+        <el-select v-model="lengthUnit" placeholder="g" style="width: 65px" >
+          <el-option label="g" value="1" />
+          <el-option label="km" value="2" />
+        </el-select>
+      </template> </el-input>
         </el-form-item>
         <el-form-item class="div8" label="Threshold" prop="threshold">
-          <el-input-number
-            v-model="form.threshold"
-            :step="1"
-            :max="100"
-            :min= 0
-            label="threshold"
-          />
+          <el-input v-model="form.threshold" :step="1" :max="100" :min="0" label="threshold">
+            <template #append>%</template>
+          </el-input>
         </el-form-item>
       </div>
     </template>
-    <el-form-item>
-      <el-button type="primary" @click="handleValidate">Valider</el-button>
-      <el-button @click="handleReset(formRef)">Réinitialiser</el-button>
+    <el-form-item class="radioBtnsContainer">
+      <el-button type="primary" @click="handleValidate" :disabled="!isVinValid">Valider</el-button>
+      <el-button  plain @click="handleReset(formRef)">Réinitialiser</el-button>
     </el-form-item>
   </el-form>
 </template>
 
 <style>
-.form_wrapper {
-  /* margin-top: 3vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 50px;
-  align-items: normal;
-  flex-wrap: nowrap; */
-}
 
 .vinForm {
   display: flex;
@@ -192,12 +214,12 @@ function handleReset(formEl: FormInstance | undefined) {
 
 .advanced_search {
   display: grid;
-  grid-template-rows: repeat(6, 1fr);
+  grid-template-rows: repeat(4, 1fr);
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 10px;
   row-gap: 20px;
-  max-height: 28vh;
-}
+  /* max-height: 28vh;*/
+} 
 
 .div1,
 .div2 {
@@ -218,4 +240,14 @@ function handleReset(formEl: FormInstance | undefined) {
 .div8 {
   grid-column: span 12;
 }
+input-with-select .el-input-group__prepend {
+  background-color: var(--el-fill-color-blank);
+}
+
+.radioBtnsContainer {
+  padding-left: 45px;
+}
+
+
+
 </style>
